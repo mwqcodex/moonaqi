@@ -53,6 +53,25 @@ pub fn Breakpoint::index_high(self : Breakpoint) -> Int {
 }
 
 ///|
+/// How a computed index is turned into an integer. The two standards the
+/// library carries disagree, so the choice is the caller's.
+pub(all) enum Rounding {
+  /// Carried up to the next integer, as HJ 633 §4.2.6 asks for.
+  CarryUp
+  /// Rounded to the nearest integer, as the EPA's TAD asks for.
+  Nearest
+}
+
+///|
+/// `value` rounded the way `rounding` asks for.
+fn round_index(value : Double, rounding : Rounding) -> Int {
+  match rounding {
+    CarryUp => carry_up(value)
+    Nearest => (value + 0.5).to_int()
+  }
+}
+
+///|
 /// `value` carried up to the next integer: 75.0 stays 75, 75.1 becomes 76.
 ///
 /// The tolerance absorbs the last-bit error of an interpolation that lands on
@@ -69,12 +88,13 @@ fn carry_up(value : Double) -> Int {
 ///|
 /// The sub-index for one pollutant: where `concentration` falls in `table`.
 ///
-/// The result is carried up to the next integer, not rounded to the nearest:
-/// HJ 633—2012 §6.2 and HJ 633—2026 §4.2.6 both ask for 向上进位取整.
-///
 /// A concentration above the last row is reported as that row's index. A
 /// negative concentration is not a measurement, and gives `None`.
-pub fn iaqi(table : Array[Breakpoint], concentration : Double) -> Int? {
+pub fn iaqi_with(
+  table : Array[Breakpoint],
+  concentration : Double,
+  rounding : Rounding,
+) -> Int? {
   if table.length() == 0 || concentration < 0.0 {
     return None
   }
@@ -92,10 +112,17 @@ pub fn iaqi(table : Array[Breakpoint], concentration : Double) -> Int? {
       let index_span = (row.index_high - row.index_low).to_double()
       let scaled = index_span / span * (concentration - row.concentration_low) +
         row.index_low.to_double()
-      return Some(carry_up(scaled))
+      return Some(round_index(scaled, rounding))
     }
   }
   None
+}
+
+///|
+/// The sub-index for one pollutant, carried up to the next integer the way
+/// China's HJ 633 asks for. Use `iaqi_with` for the EPA's rounding.
+pub fn iaqi(table : Array[Breakpoint], concentration : Double) -> Int? {
+  iaqi_with(table, concentration, CarryUp)
 }
 
 ///|

@@ -94,6 +94,48 @@ let air = @moonaqi.aqi([
 A reading the standard publishes no column for is left out rather than
 refused. A report with nothing usable in it gives `None`.
 
+## The EPA's tables
+
+The United States EPA's index is the same arithmetic over different tables,
+and the differences are the ones that matter:
+
+| | China | EPA |
+| --- | --- | --- |
+| Rounding | carried up | nearest integer |
+| Before the lookup | as measured | truncated to 1–3 places |
+| Units | µg/m³, mg/m³ | µg/m³, ppm, ppb |
+
+`epa` returns the EPA's column for a pollutant and window.
+`aqi_with(Epa, readings)` runs a report through them.
+
+```moonbit nocheck
+///|
+let air = @moonaqi.aqi_with(@moonaqi.Epa, [
+  @moonaqi.Reading::new(@moonaqi.Pm25, @moonaqi.Daily, 20.0),
+  @moonaqi.Reading::new(@moonaqi.O3, @moonaqi.EightHour, 0.07),
+]).unwrap()
+```
+
+Two of the EPA's columns start partway up rather than at zero, because that
+is where they are used from: the ozone one-hour column at 101, and the
+sulphur dioxide daily column at 201.
+
+## NowCast
+
+`nowcast_pm25` is the EPA's real-time estimate: a weighted average of the
+last twelve hourly PM2.5 concentrations, most recent first.
+
+```moonbit nocheck
+///|
+let nowcast = @moonaqi.nowcast_pm25([Some(30.0), Some(20.0), Some(10.0)])
+```
+
+The weight is the ratio of the smallest to the largest concentration in the
+window, floored at a half, so a steady window is averaged almost evenly and a
+moving one puts most of its weight on the recent hours. Hours with no
+measurement are left out of both sums, and a NowCast is only computed when at
+least two of the last three hours have one.
+
 ## Bands
 
 | Index | Band | 中文 |

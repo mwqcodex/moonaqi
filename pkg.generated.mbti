@@ -4,9 +4,25 @@ package "MWQCODEX/moonaqi"
 // Values
 pub fn aqi(Array[Reading]) -> AirQuality?
 
+pub fn aqi_with(Standard, Array[Reading]) -> AirQuality?
+
+pub fn breakpoints(Standard, Pollutant, Averaging) -> Array[Breakpoint]?
+
+pub fn epa(Pollutant, Averaging) -> Array[Breakpoint]?
+
+pub fn epa_truncate(Pollutant, Double) -> Double
+
+pub fn epa_unit(Pollutant) -> String
+
 pub fn hj633_2026(Pollutant, Averaging) -> Array[Breakpoint]?
 
 pub fn iaqi(Array[Breakpoint], Double) -> Int?
+
+pub fn iaqi_with(Array[Breakpoint], Double, Rounding) -> Int?
+
+pub fn nowcast_pm25(Array[Double?]) -> Double?
+
+pub fn rounding_of(Standard) -> Rounding
 
 pub fn window_for(Pollutant, Report) -> Averaging
 
@@ -90,6 +106,16 @@ pub(all) enum Report {
   RealTime
 }
 pub fn Report::all() -> Array[Self]
+
+pub(all) enum Rounding {
+  CarryUp
+  Nearest
+}
+
+pub(all) enum Standard {
+  China
+  Epa
+}
 
 // Type aliases
 

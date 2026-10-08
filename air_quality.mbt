@@ -100,23 +100,40 @@ pub struct AirQuality {
 }
 
 ///|
-/// The index for a set of readings: the worst sub-index, the pollutants that
-/// set it, and the ones that went past 100.
-///
-/// A reading the standard publishes no column for is left out rather than
-/// refused. A report with nothing usable in it gives `None`.
-pub fn aqi(readings : Array[Reading]) -> AirQuality? {
-  let sub_indices : Array[(Pollutant, Int)] = []
-  for reading in readings {
-    match hj633_2026(reading.pollutant, reading.averaging) {
-      Some(table) =>
-        match iaqi(table, reading.concentration) {
-          Some(sub_index) => sub_indices.push((reading.pollutant, sub_index))
-          None => ()
-        }
-      None => ()
-    }
+/// Which standard's breakpoints an index is computed from.
+pub(all) enum Standard {
+  /// China's HJ 633—2026.
+  China
+  /// The United States EPA's AQI.
+  Epa
+}
+
+///|
+/// The breakpoint table a standard publishes for a pollutant and window.
+pub fn breakpoints(
+  standard : Standard,
+  pollutant : Pollutant,
+  averaging : Averaging,
+) -> Array[Breakpoint]? {
+  match standard {
+    China => hj633_2026(pollutant, averaging)
+    Epa => epa(pollutant, averaging)
   }
+}
+
+///|
+/// The rounding a standard asks for: China carries the index up, the EPA
+/// rounds to the nearest integer.
+pub fn rounding_of(standard : Standard) -> Rounding {
+  match standard {
+    China => CarryUp
+    Epa => Nearest
+  }
+}
+
+///|
+/// Put a report's sub-indices together into an index.
+fn combine(sub_indices : Array[(Pollutant, Int)]) -> AirQuality? {
   if sub_indices.length() == 0 {
     return None
   }
@@ -141,6 +158,38 @@ pub fn aqi(readings : Array[Reading]) -> AirQuality? {
     }
   }
   Some({ index, sub_indices, dominant, non_attainment, })
+}
+
+///|
+/// The index for a set of readings, from a chosen standard's tables.
+///
+/// A reading the standard publishes no column for is left out rather than
+/// refused. The EPA truncates a concentration before it looks it up, so that
+/// is done here too. A report with nothing usable in it gives `None`.
+pub fn aqi_with(standard : Standard, readings : Array[Reading]) -> AirQuality? {
+  let sub_indices : Array[(Pollutant, Int)] = []
+  for reading in readings {
+    match breakpoints(standard, reading.pollutant, reading.averaging) {
+      Some(table) => {
+        let concentration = match standard {
+          Epa => epa_truncate(reading.pollutant, reading.concentration)
+          China => reading.concentration
+        }
+        match iaqi_with(table, concentration, rounding_of(standard)) {
+          Some(sub_index) => sub_indices.push((reading.pollutant, sub_index))
+          None => ()
+        }
+      }
+      None => ()
+    }
+  }
+  combine(sub_indices)
+}
+
+///|
+/// The index for a set of readings, from China's tables.
+pub fn aqi(readings : Array[Reading]) -> AirQuality? {
+  aqi_with(China, readings)
 }
 
 ///|

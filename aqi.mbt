@@ -64,13 +64,30 @@ pub fn Breakpoint::index_high(self : Breakpoint) -> Int {
 }
 
 ///|
+/// `value` carried up to the next integer: 75.0 stays 75, 75.1 becomes 76.
+///
+/// The tolerance keeps the arithmetic from carrying a value that is only
+/// above its integer because of how a double rounds — an interpolation that
+/// lands on 75 can land on 75.00000000000001.
+fn carry_up(value : Double) -> Int {
+  let truncated = value.to_int()
+  if value - truncated.to_double() > 1.0e-9 {
+    truncated + 1
+  } else {
+    truncated
+  }
+}
+
+///|
 /// The sub-index for one pollutant: where `concentration` falls in `table`,
 /// scaled onto the index range of the row it lands in.
 ///
 /// The interpolation is the one the standards write out —
 /// `(I_high - I_low) / (C_high - C_low) * (C - C_low) + I_low` — and the
-/// result is rounded to the nearest integer, which is how an index is
-/// reported.
+/// result is then carried up to the next integer. Both HJ 633—2012 and the
+/// standard that replaced it say the value is carried up
+/// (向上进位取整) rather than rounded, so 75.1 is reported as 76 and an exact
+/// 75 stays 75.
 ///
 /// A concentration above the last row's ceiling is reported as that row's
 /// index, so a value off the end of the table cannot produce a sub-index the
@@ -94,7 +111,7 @@ pub fn iaqi(table : Array[Breakpoint], concentration : Double) -> Int? {
       let index_span = (row.index_high - row.index_low).to_double()
       let scaled = index_span / span * (concentration - row.concentration_low) +
         row.index_low.to_double()
-      return Some((scaled + 0.5).to_int())
+      return Some(carry_up(scaled))
     }
   }
   None

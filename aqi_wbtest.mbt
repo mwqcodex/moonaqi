@@ -37,12 +37,15 @@ test "iaqi interpolates between the breakpoints" {
 }
 
 ///|
-test "iaqi rounds to the nearest integer" {
+test "iaqi carries up to the next integer" {
   let table = [Breakpoint::new(0.0, 10.0, 0, 100)]
-  // 3.5 of 10 maps to 35 exactly.
+  // An exact value is not carried anywhere.
   @debug.debug_inspect(iaqi(table, 3.5), content="Some(35)")
-  // 3.55 of 10 is 35.5, which rounds up.
-  @debug.debug_inspect(iaqi(table, 3.55), content="Some(36)")
+  // Anything above it is, however slightly.
+  @debug.debug_inspect(iaqi(table, 3.51), content="Some(36)")
+  @debug.debug_inspect(iaqi(table, 0.001), content="Some(1)")
+  // And a value that lands on its integer only through floating point is not.
+  @debug.debug_inspect(iaqi(table, 3.0), content="Some(30)")
 }
 
 ///|

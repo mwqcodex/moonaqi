@@ -1,26 +1,15 @@
 ///|
-/// The air quality index, computed from pollutant concentrations.
-///
-/// The index is not measured, it is derived: each pollutant's concentration
-/// is mapped onto a common 0-500 scale by piecewise-linear interpolation
-/// against a published table of breakpoints, and the day's index is the worst
-/// of those sub-indices. Because the tables are what the standards actually
-/// say, and because the same arithmetic serves every pollutant, the whole
-/// computation is one interpolation and a maximum.
+/// Air quality index computation from pollutant concentrations.
 ///
 /// ```moonbit nocheck
-/// let table = @moonaqi.pm25_24h()
-/// let sub = @moonaqi.iaqi(table, 55.0)   // Some(75)
-/// let category = @moonaqi.AqiCategory::of(75)  // Good
+/// let table = @moonaqi.hj633_2026(@moonaqi.Pm25, @moonaqi.Daily).unwrap()
+/// let sub = @moonaqi.iaqi(table, 60.0)          // Some(100)
+/// let category = @moonaqi.AqiCategory::of(100)  // Good
 /// ```
 
 ///|
-/// One row of a breakpoint table: the concentration range that maps onto an
-/// index range.
-///
-/// The concentration is in the unit the standard uses for that pollutant —
-/// micrograms per cubic metre for everything but carbon monoxide, which is in
-/// milligrams.
+/// One row of a breakpoint table: a concentration range and the index range
+/// it maps onto, in the unit the standard measures that pollutant in.
 pub struct Breakpoint {
   concentration_low : Double
   concentration_high : Double
@@ -66,9 +55,8 @@ pub fn Breakpoint::index_high(self : Breakpoint) -> Int {
 ///|
 /// `value` carried up to the next integer: 75.0 stays 75, 75.1 becomes 76.
 ///
-/// The tolerance keeps the arithmetic from carrying a value that is only
-/// above its integer because of how a double rounds — an interpolation that
-/// lands on 75 can land on 75.00000000000001.
+/// The tolerance absorbs the last-bit error of an interpolation that lands on
+/// an integer.
 fn carry_up(value : Double) -> Int {
   let truncated = value.to_int()
   if value - truncated.to_double() > 1.0e-9 {
@@ -79,20 +67,13 @@ fn carry_up(value : Double) -> Int {
 }
 
 ///|
-/// The sub-index for one pollutant: where `concentration` falls in `table`,
-/// scaled onto the index range of the row it lands in.
+/// The sub-index for one pollutant: where `concentration` falls in `table`.
 ///
-/// The interpolation is the one the standards write out —
-/// `(I_high - I_low) / (C_high - C_low) * (C - C_low) + I_low` — and the
-/// result is then carried up to the next integer. Both HJ 633—2012 and the
-/// standard that replaced it say the value is carried up
-/// (向上进位取整) rather than rounded, so 75.1 is reported as 76 and an exact
-/// 75 stays 75.
+/// The result is carried up to the next integer, not rounded to the nearest:
+/// HJ 633—2012 §6.2 and HJ 633—2026 §4.2.6 both ask for 向上进位取整.
 ///
-/// A concentration above the last row's ceiling is reported as that row's
-/// index, so a value off the end of the table cannot produce a sub-index the
-/// table has no room for. A negative concentration is not a measurement, and
-/// gives `None`.
+/// A concentration above the last row is reported as that row's index. A
+/// negative concentration is not a measurement, and gives `None`.
 pub fn iaqi(table : Array[Breakpoint], concentration : Double) -> Int? {
   if table.length() == 0 || concentration < 0.0 {
     return None
@@ -118,7 +99,7 @@ pub fn iaqi(table : Array[Breakpoint], concentration : Double) -> Int? {
 }
 
 ///|
-/// The band the index falls in, which is what an index is read for.
+/// The band the index falls in.
 pub enum AqiCategory {
   /// 优: good enough that no one has to think about it.
   Excellent
@@ -135,10 +116,8 @@ pub enum AqiCategory {
 }
 
 ///|
-/// The band an index falls in.
-///
-/// The boundaries are the ones the Chinese standard draws: 50, 100, 150, 200
-/// and 300, with everything above 300 in the last band.
+/// The band an index falls in: 50, 100, 150, 200 and 300 are the boundaries,
+/// as the Chinese standard draws them.
 pub fn AqiCategory::of(index : Int) -> AqiCategory {
   if index <= 50 {
     Excellent

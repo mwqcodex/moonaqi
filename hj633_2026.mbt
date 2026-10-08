@@ -1,25 +1,12 @@
 ///|
-/// The breakpoint tables the Chinese standard publishes, HJ 633—2026.
+/// The breakpoint tables of HJ 633—2026, 表3.
 ///
-/// 表3 of the standard lists, for each pollutant and averaging window, the
-/// concentrations at which the sub-index reaches each of the eight fixed
-/// points. A table here is that column turned into rows, one per step, and
-/// `iaqi` walks the rows.
+/// Each table is one column of 表3 turned into rows, one per step.
 ///
-/// Two of the columns stop short of the others, and the standard says what
-/// to do past the end rather than carrying the table on:
-///
-/// * an SO₂ one-hour concentration above 800 µg/m³ is reported as a
-///   sub-index of 200, the last row of that column;
-/// * an O₃ eight-hour concentration above 800 µg/m³ is reported as 300.
-///
-/// Both are exactly what `iaqi` already does with a concentration above its
-/// table, so the truncated columns are stored truncated and the rule falls
-/// out of the interpolation rather than being a special case in it.
-///
-/// The standard replaced HJ 633—2012 on 2026-03-01, which mattered: the
-/// PM10 and PM2.5 columns both tightened at the 100 step, from 150 and 75
-/// µg/m³ to 120 and 60.
+/// Two columns stop at 800 µg/m³ and the standard gives the sub-index above
+/// that rather than carrying the column on: SO₂ over one hour is reported as
+/// 200, O₃ over eight hours as 300. That is what `iaqi` already does above a
+/// table, so the columns are stored truncated.
 
 ///|
 /// The pollutants the standard's tables cover.
@@ -56,9 +43,7 @@ pub impl Eq for Pollutant with fn equal(self, other) {
 }
 
 ///|
-/// The averaging window a concentration is reported over. The standard
-/// carries one-hour limits for the real-time report and daily ones for the
-/// daily report, plus an eight-hour window for ozone in the daily report.
+/// The averaging window a concentration is reported over.
 pub enum Averaging {
   /// One hour, for the real-time report.
   OneHour
@@ -94,9 +79,8 @@ pub fn Pollutant::name(self : Pollutant) -> String {
 }
 
 ///|
-/// The unit a concentration is measured in. Everything is in micrograms per
-/// cubic metre except carbon monoxide, which the standard measures in
-/// milligrams.
+/// The unit a concentration is measured in: mg/m3 for carbon monoxide, ug/m3
+/// for the rest.
 pub fn Pollutant::unit(self : Pollutant) -> String {
   match self {
     Co => "mg/m3"
@@ -105,8 +89,7 @@ pub fn Pollutant::unit(self : Pollutant) -> String {
 }
 
 ///|
-/// The fixing of the index axis: every column in 表3 is read at the same
-/// eight points.
+/// The eight index points every column of 表3 is read at.
 fn index_axis() -> Array[Int] {
   [0, 50, 100, 150, 200, 300, 400, 500]
 }
@@ -133,12 +116,10 @@ fn column(
 }
 
 ///|
-/// The breakpoint table the standard publishes for a pollutant and averaging
-/// window — 表3 of HJ 633—2026.
+/// The breakpoint table for a pollutant and averaging window — 表3 of
+/// HJ 633—2026.
 ///
-/// `None` when the standard publishes no table for the pair: the one-hour
-/// limits are only for the real-time report, and only ozone is judged over
-/// eight hours.
+/// `None` for a pair the standard publishes no column for.
 pub fn hj633_2026(
   pollutant : Pollutant,
   averaging : Averaging,

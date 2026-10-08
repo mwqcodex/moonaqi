@@ -14,6 +14,8 @@ pub fn epa_truncate(Pollutant, Double) -> Double
 
 pub fn epa_unit(Pollutant) -> String
 
+pub fn hj633_2012(Pollutant, Averaging) -> Array[Breakpoint]?
+
 pub fn hj633_2026(Pollutant, Averaging) -> Array[Breakpoint]?
 
 pub fn iaqi(Array[Breakpoint], Double) -> Int?
@@ -114,6 +116,7 @@ pub(all) enum Rounding {
 
 pub(all) enum Standard {
   China
+  China2012
   Epa
 }
 

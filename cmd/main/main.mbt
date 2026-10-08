@@ -245,7 +245,8 @@ fn main {
   }
   println("")
   println(
-    "  AQI \{air.index()}   \{air.category().name()} / \{air.category().chinese_name()}",
+    "  AQI \{air.index()}   \{air.category().name()} / \{air.category().chinese_name()}" +
+    "   \{air.category().colour_name()} / \{air.category().chinese_colour_name()}",
   )
   if air.dominant().length() > 0 {
     println("  primary pollutant   \{names_of(air.dominant())}")

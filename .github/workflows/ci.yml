@@ -45,3 +45,8 @@ jobs:
           moon run cmd/main -- --realtime
           moon run cmd/main -- --pm25 150 --pm10 250
           moon run cmd/main -- --json
+
+      # The module declares wasm as its target, so no C toolchain is needed
+      # and the numbers stay comparable with a local run.
+      - name: Benchmarks
+        run: moon bench --release --target wasm

@@ -50,6 +50,41 @@ A concentration above the last row is reported as that row's index, so a value
 off the end of a table cannot produce a sub-index the table has no room for. A
 negative concentration is not a measurement, and gives `None`.
 
+## The standard's tables
+
+`hj633_2026` returns the column of 表3 that the Chinese standard publishes
+for a pollutant and an averaging window:
+
+```moonbit nocheck
+///|
+let table = @moonaqi.hj633_2026(@moonaqi.Pm25, @moonaqi.Daily).unwrap()
+let sub = @moonaqi.iaqi(table, 60.0)   // Some(100)
+```
+
+| Pollutant | One hour | Eight hours | Daily |
+| --- | --- | --- | --- |
+| PM2.5 | — | — | ✓ |
+| PM10 | — | — | ✓ |
+| SO₂ | ✓ | — | ✓ |
+| NO₂ | ✓ | — | ✓ |
+| CO | ✓ | — | ✓ |
+| O₃ | ✓ | ✓ | — |
+
+The one-hour limits are for the real-time report and the daily ones for the
+daily report; ozone is the one pollutant the daily report judges over eight
+hours. A pair with no column returns `None`.
+
+Two columns stop short of the others, and the standard writes the rule out
+rather than carrying the table on: SO₂ over one hour above 800 µg/m³ is
+reported as 200, and O₃ over eight hours above 800 µg/m³ as 300. Both fall
+out of `iaqi` clamping a concentration above its table, so the columns are
+stored truncated and no special case is needed.
+
+**HJ 633—2026 replaced HJ 633—2012 on 2026-03-01.** The PM10 and PM2.5
+columns tightened at the 100 step — from 150 and 75 µg/m³ to 120 and 60 —
+which is exactly the kind of change a table-driven library absorbs by
+changing the table.
+
 ## Bands
 
 The boundaries are the ones the Chinese standard draws:

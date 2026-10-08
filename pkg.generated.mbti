@@ -2,6 +2,8 @@
 package "MWQCODEX/moonaqi"
 
 // Values
+pub fn hj633_2026(Pollutant, Averaging) -> Array[Breakpoint]?
+
 pub fn iaqi(Array[Breakpoint], Double) -> Int?
 
 // Errors
@@ -21,6 +23,13 @@ pub fn AqiCategory::lower(Self) -> Int
 pub fn AqiCategory::name(Self) -> String
 pub fn AqiCategory::of(Int) -> Self
 
+pub enum Averaging {
+  OneHour
+  EightHour
+  Daily
+}
+pub fn Averaging::all() -> Array[Self]
+
 pub struct Breakpoint {
   concentration_low : Double
   concentration_high : Double
@@ -32,6 +41,18 @@ pub fn Breakpoint::concentration_low(Self) -> Double
 pub fn Breakpoint::index_high(Self) -> Int
 pub fn Breakpoint::index_low(Self) -> Int
 pub fn Breakpoint::new(Double, Double, Int, Int) -> Self
+
+pub enum Pollutant {
+  Pm25
+  Pm10
+  So2
+  No2
+  Co
+  O3
+}
+pub fn Pollutant::all() -> Array[Self]
+pub fn Pollutant::name(Self) -> String
+pub fn Pollutant::unit(Self) -> String
 
 // Type aliases
 

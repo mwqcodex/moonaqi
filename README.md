@@ -72,7 +72,9 @@ that instead of carrying the column on: SO₂ over one hour as 200, O₃ over
 eight hours as 300.
 
 HJ 633—2026 replaced HJ 633—2012 on 2026-03-01. The PM10 and PM2.5 columns
-tightened at the 100 step, from 150 and 75 µg/m³ to 120 and 60.
+tightened at the 100 step, from 150 and 75 µg/m³ to 120 and 60. The older
+tables are carried too, as `hj633_2012` and `Standard::China2012`, so a
+report can be computed under either.
 
 ## The index
 

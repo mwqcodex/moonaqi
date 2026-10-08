@@ -102,8 +102,10 @@ pub struct AirQuality {
 ///|
 /// Which standard's breakpoints an index is computed from.
 pub(all) enum Standard {
-  /// China's HJ 633—2026.
+  /// China's HJ 633—2026, in force since 2026-03-01.
   China
+  /// China's HJ 633—2012, which the 2026 standard replaced.
+  China2012
   /// The United States EPA's AQI.
   Epa
 }
@@ -117,6 +119,7 @@ pub fn breakpoints(
 ) -> Array[Breakpoint]? {
   match standard {
     China => hj633_2026(pollutant, averaging)
+    China2012 => hj633_2012(pollutant, averaging)
     Epa => epa(pollutant, averaging)
   }
 }
@@ -126,7 +129,7 @@ pub fn breakpoints(
 /// rounds to the nearest integer.
 pub fn rounding_of(standard : Standard) -> Rounding {
   match standard {
-    China => CarryUp
+    China | China2012 => CarryUp
     Epa => Nearest
   }
 }
@@ -173,7 +176,7 @@ pub fn aqi_with(standard : Standard, readings : Array[Reading]) -> AirQuality? {
       Some(table) => {
         let concentration = match standard {
           Epa => epa_truncate(reading.pollutant, reading.concentration)
-          China => reading.concentration
+          China | China2012 => reading.concentration
         }
         match iaqi_with(table, concentration, rounding_of(standard)) {
           Some(sub_index) => sub_indices.push((reading.pollutant, sub_index))

@@ -44,3 +44,4 @@ jobs:
           moon run cmd/main
           moon run cmd/main -- --realtime
           moon run cmd/main -- --pm25 150 --pm10 250
+          moon run cmd/main -- --json

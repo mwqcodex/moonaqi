@@ -128,7 +128,12 @@ fn readings_from(
           None => return None
         }
       }
-      None => if arg == "--realtime" { i += 1 } else { return None }
+      None =>
+        if arg == "--realtime" || arg == "--json" {
+          i += 1
+        } else {
+          return None
+        }
     }
   }
   let readings : Array[@moonaqi.Reading] = []
@@ -150,6 +155,17 @@ fn wants_realtime(args : Array[String]) -> Bool {
 }
 
 ///|
+/// Whether the arguments ask for JSON.
+fn wants_json(args : Array[String]) -> Bool {
+  for arg in args {
+    if arg == "--json" {
+      return true
+    }
+  }
+  false
+}
+
+///|
 /// Whether the arguments ask for the usage.
 fn wants_help(args : Array[String]) -> Bool {
   for arg in args {
@@ -158,6 +174,92 @@ fn wants_help(args : Array[String]) -> Bool {
     }
   }
   false
+}
+
+///|
+/// A list of names as a JSON array.
+fn json_names(names : Array[String]) -> String {
+  let out = StringBuilder(size_hint=32)
+  out.write_string("[")
+  for i = 0; i < names.length(); i = i + 1 {
+    if i > 0 {
+      out.write_string(", ")
+    }
+    out.write_string("\"" + names[i] + "\"")
+  }
+  out.write_string("]")
+  out.to_string()
+}
+
+///|
+/// The pollutants in `pollutants`, as a JSON array of names.
+fn json_pollutant_names(pollutants : Array[@moonaqi.Pollutant]) -> String {
+  let names : Array[String] = []
+  for pollutant in pollutants {
+    names.push(pollutant.name())
+  }
+  json_names(names)
+}
+
+///|
+/// The report as JSON.
+fn report_json(
+  air : @moonaqi.AirQuality,
+  readings : Array[@moonaqi.Reading],
+  report : @moonaqi.Report,
+) -> String {
+  let out = StringBuilder(size_hint=512)
+  out.write_string("{\n")
+  out.write_string(
+    "  \"report\": \"" +
+    (if report is @moonaqi.Daily { "daily" } else { "realtime" }) +
+    "\",\n",
+  )
+  out.write_string("  \"aqi\": \{air.index()},\n")
+  out.write_string("  \"category\": \"\{air.category().name()}\",\n")
+  out.write_string(
+    "  \"chinese_category\": \"\{air.category().chinese_name()}\",\n",
+  )
+  out.write_string("  \"colour\": \"\{air.category().colour_name()}\",\n")
+  let rgb = air.category().rgb()
+  out.write_string(
+    "  \"colour_rgb\": [\{rgb.red()}, \{rgb.green()}, \{rgb.blue()}],\n",
+  )
+  out.write_string("  \"readings\": [\n")
+  let entries = air.sub_indices()
+  for i = 0; i < entries.length(); i = i + 1 {
+    let pollutant = entries[i].0
+    let mut value = 0.0
+    for reading in readings {
+      if reading.pollutant() == pollutant {
+        value = reading.concentration()
+      }
+    }
+    out.write_string(
+      "    {\"pollutant\": \"" +
+      pollutant.name() +
+      "\", \"concentration\": " +
+      value.to_string() +
+      ", \"unit\": \"" +
+      pollutant.unit() +
+      "\", \"iaqi\": " +
+      entries[i].1.to_string() +
+      "}",
+    )
+    if i + 1 < entries.length() {
+      out.write_string(",")
+    }
+    out.write_string("\n")
+  }
+  out.write_string("  ],\n")
+  out.write_string(
+    "  \"primary_pollutants\": " + json_pollutant_names(air.dominant()) + ",\n",
+  )
+  out.write_string(
+    "  \"non_attainment\": " + json_pollutant_names(air.non_attainment()) + "\n",
+  )
+  out.write_string("}")
+  out.to_string()
 }
 
 ///|
@@ -179,8 +281,8 @@ fn names_of(pollutants : Array[@moonaqi.Pollutant]) -> String {
 fn usage() -> Unit {
   println("moonaqi — the air quality index from six pollutant concentrations")
   println("")
-  println("  moon run cmd/main [--realtime] [--pm25 N] [--pm10 N] [--so2 N]")
-  println("                    [--no2 N] [--co N] [--o3 N]")
+  println("  moon run cmd/main [--realtime] [--json] [--pm25 N] [--pm10 N]")
+  println("                    [--so2 N] [--no2 N] [--co N] [--o3 N]")
   println("")
   println("  PM2.5, PM10, SO2, NO2 and O3 are ug/m3; CO is mg/m3.")
   println("  Without --realtime the readings are read as a daily report.")
@@ -216,6 +318,10 @@ fn main {
       println("no usable readings")
       return
     }
+  }
+  if wants_json(args) {
+    println(report_json(air, readings, report))
+    return
   }
   println(
     if report is @moonaqi.Daily {

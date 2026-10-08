@@ -176,7 +176,19 @@ daily report (日报)
 
 `--realtime` reads the same values as a real-time report, where the one-hour
 columns are much more lenient. `--pm25`, `--pm10`, `--so2`, `--no2`, `--co`
-and `--o3` override a concentration.
+and `--o3` override a concentration. `--json` prints the report as JSON
+instead:
+
+```
+$ moon run cmd/main -- --json
+{
+  "report": "daily",
+  "aqi": 150,
+  "category": "Lightly polluted",
+  "chinese_category": "轻度污染",
+  ...
+}
+```
 
 ## Testing
 

@@ -69,3 +69,28 @@ test "padding lines a column up" {
   inspect(pad_right("ab", 5), content="ab   ")
   inspect(pad_right("abcde", 3), content="abcde")
 }
+
+///|
+test "the report comes out as json" {
+  let readings = readings_from(["--json"], @moonaqi.Daily).unwrap()
+  let air = @moonaqi.aqi(readings).unwrap()
+  let json = report_json(air, readings, @moonaqi.Daily)
+  inspect(json.has_prefix("{"), content="true")
+  inspect(json.has_suffix("}"), content="true")
+  inspect(json.contains("\"report\": \"daily\""), content="true")
+  inspect(json.contains("\"aqi\": 150"), content="true")
+  inspect(json.contains("\"colour\": \"Orange\""), content="true")
+  inspect(json.contains("\"colour_rgb\": [255, 126, 0]"), content="true")
+  inspect(json.contains("\"pollutant\": \"PM2.5\""), content="true")
+  inspect(json.contains("\"primary_pollutants\": [\"PM2.5\"]"), content="true")
+  inspect(json.contains("\"non_attainment\": [\"PM2.5\"]"), content="true")
+  inspect(json.contains("轻度污染"), content="true")
+}
+
+///|
+test "a realtime report says so in its json" {
+  let readings = readings_from(["--realtime", "--json"], @moonaqi.RealTime).unwrap()
+  let air = @moonaqi.aqi(readings).unwrap()
+  let json = report_json(air, readings, @moonaqi.RealTime)
+  inspect(json.contains("\"report\": \"realtime\""), content="true")
+}

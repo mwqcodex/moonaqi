@@ -39,6 +39,23 @@ pub enum Pollutant {
 }
 
 ///|
+/// Two pollutants are the same when they are the same pollutant.
+pub extend Pollutant with Eq::{not_equal, equal}
+
+///|
+pub impl Eq for Pollutant with fn equal(self, other) {
+  match (self, other) {
+    (Pm25, Pm25) => true
+    (Pm10, Pm10) => true
+    (So2, So2) => true
+    (No2, No2) => true
+    (Co, Co) => true
+    (O3, O3) => true
+    _ => false
+  }
+}
+
+///|
 /// The averaging window a concentration is reported over. The standard
 /// carries one-hour limits for the real-time report and daily ones for the
 /// daily report, plus an eight-hour window for ozone in the daily report.

@@ -85,6 +85,36 @@ columns tightened at the 100 step — from 150 and 75 µg/m³ to 120 and 60 —
 which is exactly the kind of change a table-driven library absorbs by
 changing the table.
 
+## The index
+
+`aqi` puts a report's readings together: each becomes a sub-index, the index
+is the worst of them, and the standard's two derived lists fall out of it —
+the primary pollutant, which is only named once the index is above 50, and
+the non-attainment pollutants, the ones past 100.
+
+```moonbit nocheck
+///|
+let readings = [
+  @moonaqi.Reading::of(@moonaqi.Pm25, @moonaqi.Daily, 60.0),
+  @moonaqi.Reading::of(@moonaqi.No2, @moonaqi.Daily, 40.0),
+]
+let air = @moonaqi.aqi(readings).unwrap()
+air.index()             // 100
+air.category().name()   // "Good"
+air.dominant()          // [Pm25]
+```
+
+`Reading::of` takes the report and picks the window the standard judges that
+pollutant over, which is where the two exceptions live: ozone is judged over
+its maximum eight-hour average in the daily report, and PM10 and PM2.5 have
+no one-hour limit, so the real-time report reads their one-hour concentration
+against the daily column.
+
+A reading the standard publishes no column for leaves that indicator out
+rather than failing the report — the standard says a missing indicator is to
+be described, not to sink the report. A report with nothing usable in it has
+no index and `aqi` returns `None`.
+
 ## Bands
 
 The boundaries are the ones the Chinese standard draws:

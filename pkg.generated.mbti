@@ -2,13 +2,30 @@
 package "MWQCODEX/moonaqi"
 
 // Values
+pub fn aqi(Array[Reading]) -> AirQuality?
+
 pub fn hj633_2026(Pollutant, Averaging) -> Array[Breakpoint]?
 
 pub fn iaqi(Array[Breakpoint], Double) -> Int?
 
+pub fn window_for(Pollutant, Report) -> Averaging
+
 // Errors
 
 // Types and methods
+pub struct AirQuality {
+  index : Int
+  sub_indices : Array[(Pollutant, Int)]
+  dominant : Array[Pollutant]
+  non_attainment : Array[Pollutant]
+}
+pub fn AirQuality::category(Self) -> AqiCategory
+pub fn AirQuality::dominant(Self) -> Array[Pollutant]
+pub fn AirQuality::index(Self) -> Int
+pub fn AirQuality::non_attainment(Self) -> Array[Pollutant]
+pub fn AirQuality::sub_index(Self, Pollutant) -> Int?
+pub fn AirQuality::sub_indices(Self) -> Array[(Pollutant, Int)]
+
 pub enum AqiCategory {
   Excellent
   Good
@@ -51,8 +68,28 @@ pub enum Pollutant {
   O3
 }
 pub fn Pollutant::all() -> Array[Self]
+pub fn Pollutant::equal(Self, Self) -> Bool
 pub fn Pollutant::name(Self) -> String
+pub fn Pollutant::not_equal(Self, Self) -> Bool
 pub fn Pollutant::unit(Self) -> String
+pub impl Eq for Pollutant
+
+pub struct Reading {
+  pollutant : Pollutant
+  averaging : Averaging
+  concentration : Double
+}
+pub fn Reading::averaging(Self) -> Averaging
+pub fn Reading::concentration(Self) -> Double
+pub fn Reading::new(Pollutant, Averaging, Double) -> Self
+pub fn Reading::of(Pollutant, Report, Double) -> Self
+pub fn Reading::pollutant(Self) -> Pollutant
+
+pub enum Report {
+  Daily
+  RealTime
+}
+pub fn Report::all() -> Array[Self]
 
 // Type aliases
 

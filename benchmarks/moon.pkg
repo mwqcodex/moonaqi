@@ -1,0 +1,4 @@
+import {
+  "MWQCODEX/moonaqi",
+  "moonbitlang/core/bench",
+} for "wbtest"

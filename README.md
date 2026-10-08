@@ -140,14 +140,17 @@ least two of the last three hours have one.
 
 ## Bands
 
-| Index | Band | 中文 |
-| --- | --- | --- |
-| 0–50 | Excellent | 优 |
-| 51–100 | Good | 良 |
-| 101–150 | Lightly polluted | 轻度污染 |
-| 151–200 | Moderately polluted | 中度污染 |
-| 201–300 | Heavily polluted | 重度污染 |
-| 301+ | Severely polluted | 严重污染 |
+| Index | Band | 中文 | Colour |
+| --- | --- | --- | --- |
+| 0–50 | Excellent | 优 | Green 绿色 |
+| 51–100 | Good | 良 | Yellow 黄色 |
+| 101–150 | Lightly polluted | 轻度污染 | Orange 橙色 |
+| 151–200 | Moderately polluted | 中度污染 | Red 红色 |
+| 201–300 | Heavily polluted | 重度污染 | Purple 紫色 |
+| 301+ | Severely polluted | 严重污染 | Maroon 褐红色 |
+
+`AqiCategory::rgb` gives the colour's channels, and `colour_name` and
+`chinese_colour_name` its name in either language.
 
 ## Demo
 

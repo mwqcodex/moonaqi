@@ -53,10 +53,13 @@ pub(all) enum AqiCategory {
   SeverelyPolluted
 }
 pub fn AqiCategory::all() -> Array[Self]
+pub fn AqiCategory::chinese_colour_name(Self) -> String
 pub fn AqiCategory::chinese_name(Self) -> String
+pub fn AqiCategory::colour_name(Self) -> String
 pub fn AqiCategory::lower(Self) -> Int
 pub fn AqiCategory::name(Self) -> String
 pub fn AqiCategory::of(Int) -> Self
+pub fn AqiCategory::rgb(Self) -> Rgb
 
 pub(all) enum Averaging {
   OneHour
@@ -108,6 +111,16 @@ pub(all) enum Report {
   RealTime
 }
 pub fn Report::all() -> Array[Self]
+
+pub struct Rgb {
+  red : Int
+  green : Int
+  blue : Int
+}
+pub fn Rgb::blue(Self) -> Int
+pub fn Rgb::green(Self) -> Int
+pub fn Rgb::new(Int, Int, Int) -> Self
+pub fn Rgb::red(Self) -> Int
 
 pub(all) enum Rounding {
   CarryUp

@@ -10,7 +10,7 @@
 
 ///|
 /// The pollutants the standard's tables cover.
-pub enum Pollutant {
+pub(all) enum Pollutant {
   /// PM2.5, fine particulate matter.
   Pm25
   /// PM10, coarse particulate matter.
@@ -44,7 +44,7 @@ pub impl Eq for Pollutant with fn equal(self, other) {
 
 ///|
 /// The averaging window a concentration is reported over.
-pub enum Averaging {
+pub(all) enum Averaging {
   /// One hour, for the real-time report.
   OneHour
   /// Eight hours, the window the daily report judges ozone over.

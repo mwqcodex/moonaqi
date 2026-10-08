@@ -105,6 +105,32 @@ refused. A report with nothing usable in it gives `None`.
 | 201–300 | Heavily polluted | 重度污染 |
 | 301+ | Severely polluted | 严重污染 |
 
+## Demo
+
+`cmd/main` takes six concentrations and prints the report a monitoring
+station publishes:
+
+```
+$ moon run cmd/main
+daily report (日报)
+
+  pollutant  concentration   IAQI
+  PM2.5      115 ug/m3       150
+  PM10       120 ug/m3       100
+  SO2        50 ug/m3        50
+  NO2        40 ug/m3        50
+  CO         4 mg/m3         100
+  O3         160 ug/m3       100
+
+  AQI 150   Lightly polluted / 轻度污染
+  primary pollutant   PM2.5
+  over the limit      PM2.5
+```
+
+`--realtime` reads the same values as a real-time report, where the one-hour
+columns are much more lenient. `--pm25`, `--pm10`, `--so2`, `--no2`, `--co`
+and `--o3` override a concentration.
+
 ## Testing
 
 ```

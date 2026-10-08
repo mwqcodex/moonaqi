@@ -38,3 +38,9 @@ jobs:
 
       - name: Tests
         run: moon test
+
+      - name: Demo
+        run: |
+          moon run cmd/main
+          moon run cmd/main -- --realtime
+          moon run cmd/main -- --pm25 150 --pm10 250

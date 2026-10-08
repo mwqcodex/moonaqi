@@ -13,7 +13,7 @@
 
 ///|
 /// Which report a set of readings is for.
-pub enum Report {
+pub(all) enum Report {
   /// 日报: the day's averages.
   Daily
   /// 实时报: the latest hour.

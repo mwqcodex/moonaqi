@@ -1,0 +1,10 @@
+import {
+  "MWQCODEX/moonaqi",
+  "moonbitlang/core/env",
+}
+
+import {
+  "moonbitlang/core/debug",
+} for "wbtest"
+
+pkgtype(kind: "executable")

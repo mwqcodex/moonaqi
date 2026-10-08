@@ -100,7 +100,7 @@ pub fn iaqi(table : Array[Breakpoint], concentration : Double) -> Int? {
 
 ///|
 /// The band the index falls in.
-pub enum AqiCategory {
+pub(all) enum AqiCategory {
   /// 优: good enough that no one has to think about it.
   Excellent
   /// 良: acceptable.

@@ -26,7 +26,7 @@ pub fn AirQuality::non_attainment(Self) -> Array[Pollutant]
 pub fn AirQuality::sub_index(Self, Pollutant) -> Int?
 pub fn AirQuality::sub_indices(Self) -> Array[(Pollutant, Int)]
 
-pub enum AqiCategory {
+pub(all) enum AqiCategory {
   Excellent
   Good
   LightlyPolluted
@@ -40,7 +40,7 @@ pub fn AqiCategory::lower(Self) -> Int
 pub fn AqiCategory::name(Self) -> String
 pub fn AqiCategory::of(Int) -> Self
 
-pub enum Averaging {
+pub(all) enum Averaging {
   OneHour
   EightHour
   Daily
@@ -59,7 +59,7 @@ pub fn Breakpoint::index_high(Self) -> Int
 pub fn Breakpoint::index_low(Self) -> Int
 pub fn Breakpoint::new(Double, Double, Int, Int) -> Self
 
-pub enum Pollutant {
+pub(all) enum Pollutant {
   Pm25
   Pm10
   So2
@@ -85,7 +85,7 @@ pub fn Reading::new(Pollutant, Averaging, Double) -> Self
 pub fn Reading::of(Pollutant, Report, Double) -> Self
 pub fn Reading::pollutant(Self) -> Pollutant
 
-pub enum Report {
+pub(all) enum Report {
   Daily
   RealTime
 }

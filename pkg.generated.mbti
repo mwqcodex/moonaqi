@@ -1,0 +1,38 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "MWQCODEX/moonaqi"
+
+// Values
+pub fn iaqi(Array[Breakpoint], Double) -> Int?
+
+// Errors
+
+// Types and methods
+pub enum AqiCategory {
+  Excellent
+  Good
+  LightlyPolluted
+  ModeratelyPolluted
+  HeavilyPolluted
+  SeverelyPolluted
+}
+pub fn AqiCategory::all() -> Array[Self]
+pub fn AqiCategory::chinese_name(Self) -> String
+pub fn AqiCategory::lower(Self) -> Int
+pub fn AqiCategory::name(Self) -> String
+pub fn AqiCategory::of(Int) -> Self
+
+pub struct Breakpoint {
+  concentration_low : Double
+  concentration_high : Double
+  index_low : Int
+  index_high : Int
+}
+pub fn Breakpoint::concentration_high(Self) -> Double
+pub fn Breakpoint::concentration_low(Self) -> Double
+pub fn Breakpoint::index_high(Self) -> Int
+pub fn Breakpoint::index_low(Self) -> Int
+pub fn Breakpoint::new(Double, Double, Int, Int) -> Self
+
+// Type aliases
+
+// Traits

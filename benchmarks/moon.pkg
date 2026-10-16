@@ -1,4 +1,4 @@
 import {
-  "MWQCODEX/moonaqi",
+  "mwqcodex/moonaqi",
   "moonbitlang/core/bench",
 } for "wbtest"

@@ -1,5 +1,5 @@
 import {
-  "MWQCODEX/moonaqi",
+  "mwqcodex/moonaqi",
   "moonbitlang/core/env",
 }
 

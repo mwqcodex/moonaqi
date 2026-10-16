@@ -94,3 +94,62 @@ test "a realtime report says so in its json" {
   let json = report_json(air, readings, @moonaqi.RealTime)
   inspect(json.contains("\"report\": \"realtime\""), content="true")
 }
+
+///|
+/// A series as the command line writes it, in a form a test can compare.
+fn series_text(text : String) -> String {
+  match parse_series(text) {
+    Some(hours) => {
+      let out = StringBuilder(size_hint=32)
+      for hour in hours {
+        out.write_string(
+          match hour {
+            Some(value) => "\{value} "
+            None => "- "
+          },
+        )
+      }
+      out.to_string()
+    }
+    None => "(unreadable)"
+  }
+}
+
+///|
+test "a series repeats a value" {
+  inspect(series_text("35x3"), content="35 35 35 ")
+  inspect(series_text("35"), content="35 ")
+  inspect(series_text("100x2,160x2"), content="100 100 160 160 ")
+}
+
+///|
+/// A leading comma is an hour with no reading, which is how a day with a gap
+/// is written on the command line.
+test "an empty element is a missing hour" {
+  inspect(series_text(",40x2"), content="- 40 40 ")
+  inspect(series_text("35x2,"), content="35 35 - ")
+}
+
+///|
+test "a series that cannot be read is refused rather than guessed at" {
+  inspect(series_text("35x"), content="(unreadable)")
+  inspect(series_text("35xabc"), content="(unreadable)")
+  inspect(series_text("x3"), content="(unreadable)")
+}
+
+///|
+test "the pollutants are named as the tables spell them" {
+  inspect(pollutant_named("PM2.5").unwrap().name(), content="PM2.5")
+  inspect(pollutant_named("O3").unwrap().name(), content="O3")
+  inspect(pollutant_named("pm2.5") is None, content="true")
+  inspect(pollutant_named("XX") is None, content="true")
+}
+
+///|
+test "whole numbers" {
+  @debug.debug_inspect(whole_number("24"), content="Some(24)")
+  @debug.debug_inspect(whole_number("0"), content="Some(0)")
+  @debug.debug_inspect(whole_number("1.5") is None, content="true")
+  @debug.debug_inspect(whole_number("abc") is None, content="true")
+  @debug.debug_inspect(whole_number("") is None, content="true")
+}

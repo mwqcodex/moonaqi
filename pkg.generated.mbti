@@ -80,6 +80,44 @@ pub fn Breakpoint::index_high(Self) -> Int
 pub fn Breakpoint::index_low(Self) -> Int
 pub fn Breakpoint::new(Double, Double, Int, Int) -> Self
 
+pub struct Day {
+  station : String
+  hours : Array[Hourly]
+}
+pub fn Day::aqi(Self, Standard, DayRules) -> AirQuality?
+pub fn Day::hourly(Self, Pollutant) -> Hourly?
+pub fn Day::hours(Self) -> Array[Hourly]
+pub fn Day::latest_readings(Self) -> Array[Reading]
+pub fn Day::merged(String, Array[Self]) -> Self
+pub fn Day::new(String) -> Self
+pub fn Day::readings(Self, DayRules) -> Array[Reading]
+pub fn Day::record(Self, Pollutant, Double?) -> Unit
+pub fn Day::station(Self) -> String
+
+pub struct DayRules {
+  daily : Window
+  ozone : Window
+}
+pub fn DayRules::daily(Self) -> Window
+pub fn DayRules::new(Window, Window) -> Self
+pub fn DayRules::ozone(Self) -> Window
+
+pub struct Hourly {
+  pollutant : Pollutant
+  values : Array[Double?]
+}
+pub fn Hourly::at(Self, Int) -> Double?
+pub fn Hourly::length(Self) -> Int
+pub fn Hourly::maximum_rolling(Self, Window) -> Double?
+pub fn Hourly::mean(Self, Int) -> Double?
+pub fn Hourly::new(Pollutant) -> Self
+pub fn Hourly::pollutant(Self) -> Pollutant
+pub fn Hourly::push(Self, Double?) -> Unit
+pub fn Hourly::rolling(Self, Window) -> Array[Double?]
+pub fn Hourly::valid_between(Self, Int, Int) -> Int
+pub fn Hourly::values(Self) -> Array[Double?]
+pub fn Hourly::window_mean(Self, Int, Window) -> Double?
+
 pub(all) enum Pollutant {
   Pm25
   Pm10
@@ -132,6 +170,14 @@ pub(all) enum Standard {
   China2012
   Epa
 }
+
+pub struct Window {
+  window : Int
+  minimum_valid : Int
+}
+pub fn Window::minimum_valid(Self) -> Int
+pub fn Window::new(Int, Int) -> Self
+pub fn Window::window(Self) -> Int
 
 // Type aliases
 

@@ -138,6 +138,54 @@ moving one puts most of its weight on the recent hours. Hours with no
 measurement are left out of both sums, and a NowCast is only computed when at
 least two of the last three hours have one.
 
+## A day of hours
+
+A monitor reports concentrations, not indices, and it reports them an hour at
+a time with hours missing when an instrument is down. Between the raw hours
+and the index sits the work the standards actually describe, and `Hourly` and
+`Day` do it.
+
+```moonbit nocheck
+///|
+let day = @moonaqi.Day::new("STATION")
+
+///|
+// One pass per hour, recording every pollutant, so that gaps in one series
+// cannot shift another's hours.
+for hour = 0; hour < 24; hour = hour + 1 {
+  day.record(@moonaqi.Pm25, Some(35.0))
+  day.record(@moonaqi.O3, Some(if hour < 12 { 100.0 } else { 160.0 }))
+}
+
+///|
+let rules = @moonaqi.DayRules::new(
+  @moonaqi.Window::new(24, 20), // a day over 24 hours, at least 20 reported
+  @moonaqi.Window::new(8, 6),   // ozone over its highest 8, at least 6
+)
+
+///|
+day.aqi(@moonaqi.China, rules).unwrap()
+```
+
+Three things this layer does that a table lookup cannot:
+
+- **A missing hour is not a nought.** An average is taken over the hours that
+  carry a reading, so a monitor that was down for an hour does not drag the
+  day towards a number nobody measured.
+- **Ozone is its highest eight-hour average, not its daily average.** The
+  window slides, so the worst stretch can straddle any boundary; on a day of
+  twelve hours at 100 and twelve at 160, the whole-day average is 130 and the
+  answer is 160.
+- **An indicator too thin to average is left out.** The standards call that a
+  missing indicator, and it is reported as one rather than guessed at.
+
+The minimum number of reported hours is a parameter rather than a constant:
+both standards that this library carries set one, both have revised it, and a
+caller reporting to an authority supplies that authority's number.
+
+`Day::merged` builds a city's day from its stations': the average, hour by
+hour, of the stations that reported that hour.
+
 ## Bands
 
 | Index | Band | 中文 | Colour |
@@ -178,6 +226,31 @@ daily report (日报)
 columns are much more lenient. `--pm25`, `--pm10`, `--so2`, `--no2`, `--co`
 and `--o3` override a concentration. `--json` prints the report as JSON
 instead:
+
+A day of hours can be fed in directly, and is averaged and indexed the way the
+standards describe:
+
+```
+$ moon run cmd/main -- --station STATION \
+    --series PM2.5=35x24 --series NO2=,40x23 --series O3=100x12,160x12
+moonaqi — a day of hours, averaged and indexed
+
+  station   STATION (HJ 633—2026)
+  rules     a day over 24 hours with at least 20 reported, ozone over its highest 8 with at least 6
+
+  PM2.5   24 hours, 24 reported   24-hour average   35 ug/m3
+  NO2     24 hours, 23 reported   24-hour average   40 ug/m3
+  O3      24 hours, 24 reported   8-hour maximum    160 ug/m3
+
+  AQI 100   Good / 良   Yellow / 黄色
+  primary pollutant   O3
+```
+
+A series element is a concentration, `value xN` for a run of hours, or nothing
+at all for an hour with no reading. `--standard epa` reads the same hours
+under the EPA's tables, and the unit each indicator is read in is printed, so
+a concentration fed in the wrong standard's units is visibly wrong rather than
+quietly indexed.
 
 ```
 $ moon run cmd/main -- --json

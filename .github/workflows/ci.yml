@@ -45,6 +45,8 @@ jobs:
           moon run cmd/main -- --realtime
           moon run cmd/main -- --pm25 150 --pm10 250
           moon run cmd/main -- --json
+          moon run cmd/main -- --station STATION --series PM2.5=35x24 --series NO2=,40x23 --series O3=100x12,160x12
+          moon run cmd/main -- --standard epa --series PM2.5=35x24 --series O3=100x12,160x12
 
       # The module declares wasm as its target, so no C toolchain is needed
       # and the numbers stay comparable with a local run.

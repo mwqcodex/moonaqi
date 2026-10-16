@@ -24,7 +24,7 @@ pub fn epa_unit(pollutant : Pollutant) -> String {
 ///|
 /// The number of decimal places the EPA truncates a concentration to before
 /// looking it up.
-fn epa_places(pollutant : Pollutant) -> Int {
+fn epa_places(pollutant : Pollutant) -> Int32 {
   match pollutant {
     O3 => 3
     Pm25 | Co => 1
@@ -34,7 +34,7 @@ fn epa_places(pollutant : Pollutant) -> Int {
 
 ///|
 /// `value` truncated, not rounded, to `places` decimals.
-fn truncate_to(value : Double, places : Int) -> Double {
+fn truncate_to(value : Double, places : Int32) -> Double {
   let mut scale = 1.0
   for i = 0; i < places; i = i + 1 {
     scale = scale * 10.0

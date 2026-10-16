@@ -48,7 +48,7 @@ fn parse_decimal(text : StringView) -> Double? {
 
 ///|
 /// `text` padded on the right to `width`, so a column of them lines up.
-fn pad_right(text : String, width : Int) -> String {
+fn pad_right(text : String, width : Int32) -> String {
   let mut out = text
   while out.length() < width {
     out = out + " "

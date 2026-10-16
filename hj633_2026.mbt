@@ -90,7 +90,7 @@ pub fn Pollutant::unit(self : Pollutant) -> String {
 
 ///|
 /// The eight index points every column of 表3 is read at.
-fn index_axis() -> Array[Int] {
+fn index_axis() -> Array[Int32] {
   [0, 50, 100, 150, 200, 300, 400, 500]
 }
 
@@ -99,7 +99,7 @@ fn index_axis() -> Array[Int] {
 /// as `concentrations`.
 fn column(
   concentrations : Array[Double],
-  indices : Array[Int],
+  indices : Array[Int32],
 ) -> Array[Breakpoint] {
   let rows : Array[Breakpoint] = []
   for i = 0; i + 1 < concentrations.length(); i = i + 1 {

@@ -93,8 +93,8 @@ pub fn Reading::concentration(self : Reading) -> Double {
 ///|
 /// The index a report's readings add up to.
 pub struct AirQuality {
-  index : Int
-  sub_indices : Array[(Pollutant, Int)]
+  index : Int32
+  sub_indices : Array[(Pollutant, Int32)]
   dominant : Array[Pollutant]
   non_attainment : Array[Pollutant]
 }
@@ -136,7 +136,7 @@ pub fn rounding_of(standard : Standard) -> Rounding {
 
 ///|
 /// Put a report's sub-indices together into an index.
-fn combine(sub_indices : Array[(Pollutant, Int)]) -> AirQuality? {
+fn combine(sub_indices : Array[(Pollutant, Int32)]) -> AirQuality? {
   if sub_indices.length() == 0 {
     return None
   }
@@ -170,7 +170,7 @@ fn combine(sub_indices : Array[(Pollutant, Int)]) -> AirQuality? {
 /// refused. The EPA truncates a concentration before it looks it up, so that
 /// is done here too. A report with nothing usable in it gives `None`.
 pub fn aqi_with(standard : Standard, readings : Array[Reading]) -> AirQuality? {
-  let sub_indices : Array[(Pollutant, Int)] = []
+  let sub_indices : Array[(Pollutant, Int32)] = []
   for reading in readings {
     match breakpoints(standard, reading.pollutant, reading.averaging) {
       Some(table) => {
@@ -197,7 +197,7 @@ pub fn aqi(readings : Array[Reading]) -> AirQuality? {
 
 ///|
 /// The index itself.
-pub fn AirQuality::index(self : AirQuality) -> Int {
+pub fn AirQuality::index(self : AirQuality) -> Int32 {
   self.index
 }
 
@@ -222,13 +222,16 @@ pub fn AirQuality::non_attainment(self : AirQuality) -> Array[Pollutant] {
 
 ///|
 /// Every sub-index the report produced, in the order the readings came in.
-pub fn AirQuality::sub_indices(self : AirQuality) -> Array[(Pollutant, Int)] {
+pub fn AirQuality::sub_indices(self : AirQuality) -> Array[(Pollutant, Int32)] {
   self.sub_indices
 }
 
 ///|
 /// The sub-index for one pollutant, when the report carried it.
-pub fn AirQuality::sub_index(self : AirQuality, pollutant : Pollutant) -> Int? {
+pub fn AirQuality::sub_index(
+  self : AirQuality,
+  pollutant : Pollutant,
+) -> Int32? {
   for entry in self.sub_indices {
     let (reported, sub_index) = entry
     if reported == pollutant {

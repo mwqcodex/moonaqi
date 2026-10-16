@@ -13,8 +13,8 @@
 pub struct Breakpoint {
   concentration_low : Double
   concentration_high : Double
-  index_low : Int
-  index_high : Int
+  index_low : Int32
+  index_high : Int32
 }
 
 ///|
@@ -22,8 +22,8 @@ pub struct Breakpoint {
 pub fn Breakpoint::new(
   concentration_low : Double,
   concentration_high : Double,
-  index_low : Int,
-  index_high : Int,
+  index_low : Int32,
+  index_high : Int32,
 ) -> Breakpoint {
   { concentration_low, concentration_high, index_low, index_high, }
 }
@@ -42,13 +42,13 @@ pub fn Breakpoint::concentration_high(self : Breakpoint) -> Double {
 
 ///|
 /// The index at the low end of the row.
-pub fn Breakpoint::index_low(self : Breakpoint) -> Int {
+pub fn Breakpoint::index_low(self : Breakpoint) -> Int32 {
   self.index_low
 }
 
 ///|
 /// The index at the high end of the row.
-pub fn Breakpoint::index_high(self : Breakpoint) -> Int {
+pub fn Breakpoint::index_high(self : Breakpoint) -> Int32 {
   self.index_high
 }
 
@@ -64,7 +64,7 @@ pub(all) enum Rounding {
 
 ///|
 /// `value` rounded the way `rounding` asks for.
-fn round_index(value : Double, rounding : Rounding) -> Int {
+fn round_index(value : Double, rounding : Rounding) -> Int32 {
   match rounding {
     CarryUp => carry_up(value)
     Nearest => (value + 0.5).to_int()
@@ -76,7 +76,7 @@ fn round_index(value : Double, rounding : Rounding) -> Int {
 ///
 /// The tolerance absorbs the last-bit error of an interpolation that lands on
 /// an integer.
-fn carry_up(value : Double) -> Int {
+fn carry_up(value : Double) -> Int32 {
   let truncated = value.to_int()
   if value - truncated.to_double() > 1.0e-9 {
     truncated + 1
@@ -94,7 +94,7 @@ pub fn iaqi_with(
   table : Array[Breakpoint],
   concentration : Double,
   rounding : Rounding,
-) -> Int? {
+) -> Int32? {
   if table.length() == 0 || concentration < 0.0 {
     return None
   }
@@ -121,7 +121,7 @@ pub fn iaqi_with(
 ///|
 /// The sub-index for one pollutant, carried up to the next integer the way
 /// China's HJ 633 asks for. Use `iaqi_with` for the EPA's rounding.
-pub fn iaqi(table : Array[Breakpoint], concentration : Double) -> Int? {
+pub fn iaqi(table : Array[Breakpoint], concentration : Double) -> Int32? {
   iaqi_with(table, concentration, CarryUp)
 }
 
@@ -145,7 +145,7 @@ pub(all) enum AqiCategory {
 ///|
 /// The band an index falls in: 50, 100, 150, 200 and 300 are the boundaries,
 /// as the Chinese standard draws them.
-pub fn AqiCategory::of(index : Int) -> AqiCategory {
+pub fn AqiCategory::of(index : Int32) -> AqiCategory {
   if index <= 50 {
     Excellent
   } else if index <= 100 {
@@ -202,7 +202,7 @@ pub fn AqiCategory::chinese_name(self : AqiCategory) -> String {
 
 ///|
 /// The lowest index in the band.
-pub fn AqiCategory::lower(self : AqiCategory) -> Int {
+pub fn AqiCategory::lower(self : AqiCategory) -> Int32 {
   match self {
     Excellent => 0
     Good => 51

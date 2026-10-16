@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "MWQCODEX/moonaqi"
+package "mwqcodex/moonaqi"
 
 // Values
 pub fn aqi(Array[Reading]) -> AirQuality?

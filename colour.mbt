@@ -8,28 +8,28 @@
 ///|
 /// A colour, as its three channels.
 pub struct Rgb {
-  red : Int
-  green : Int
-  blue : Int
+  red : Int32
+  green : Int32
+  blue : Int32
 }
 
 ///|
-pub fn Rgb::new(red : Int, green : Int, blue : Int) -> Rgb {
+pub fn Rgb::new(red : Int32, green : Int32, blue : Int32) -> Rgb {
   { red, green, blue, }
 }
 
 ///|
-pub fn Rgb::red(self : Rgb) -> Int {
+pub fn Rgb::red(self : Rgb) -> Int32 {
   self.red
 }
 
 ///|
-pub fn Rgb::green(self : Rgb) -> Int {
+pub fn Rgb::green(self : Rgb) -> Int32 {
   self.green
 }
 
 ///|
-pub fn Rgb::blue(self : Rgb) -> Int {
+pub fn Rgb::blue(self : Rgb) -> Int32 {
   self.blue
 }
 

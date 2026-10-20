@@ -18,9 +18,9 @@ pub fn hj633_2012(Pollutant, Averaging) -> Array[Breakpoint]?
 
 pub fn hj633_2026(Pollutant, Averaging) -> Array[Breakpoint]?
 
-pub fn iaqi(Array[Breakpoint], Double) -> Int?
+pub fn iaqi(Array[Breakpoint], Double) -> Int32?
 
-pub fn iaqi_with(Array[Breakpoint], Double, Rounding) -> Int?
+pub fn iaqi_with(Array[Breakpoint], Double, Rounding) -> Int32?
 
 pub fn nowcast_pm25(Array[Double?]) -> Double?
 
@@ -32,17 +32,17 @@ pub fn window_for(Pollutant, Report) -> Averaging
 
 // Types and methods
 pub struct AirQuality {
-  index : Int
-  sub_indices : Array[(Pollutant, Int)]
+  index : Int32
+  sub_indices : Array[(Pollutant, Int32)]
   dominant : Array[Pollutant]
   non_attainment : Array[Pollutant]
 }
 pub fn AirQuality::category(Self) -> AqiCategory
 pub fn AirQuality::dominant(Self) -> Array[Pollutant]
-pub fn AirQuality::index(Self) -> Int
+pub fn AirQuality::index(Self) -> Int32
 pub fn AirQuality::non_attainment(Self) -> Array[Pollutant]
-pub fn AirQuality::sub_index(Self, Pollutant) -> Int?
-pub fn AirQuality::sub_indices(Self) -> Array[(Pollutant, Int)]
+pub fn AirQuality::sub_index(Self, Pollutant) -> Int32?
+pub fn AirQuality::sub_indices(Self) -> Array[(Pollutant, Int32)]
 
 pub(all) enum AqiCategory {
   Excellent
@@ -56,9 +56,9 @@ pub fn AqiCategory::all() -> Array[Self]
 pub fn AqiCategory::chinese_colour_name(Self) -> String
 pub fn AqiCategory::chinese_name(Self) -> String
 pub fn AqiCategory::colour_name(Self) -> String
-pub fn AqiCategory::lower(Self) -> Int
+pub fn AqiCategory::lower(Self) -> Int32
 pub fn AqiCategory::name(Self) -> String
-pub fn AqiCategory::of(Int) -> Self
+pub fn AqiCategory::of(Int32) -> Self
 pub fn AqiCategory::rgb(Self) -> Rgb
 
 pub(all) enum Averaging {
@@ -71,14 +71,14 @@ pub fn Averaging::all() -> Array[Self]
 pub struct Breakpoint {
   concentration_low : Double
   concentration_high : Double
-  index_low : Int
-  index_high : Int
+  index_low : Int32
+  index_high : Int32
 }
 pub fn Breakpoint::concentration_high(Self) -> Double
 pub fn Breakpoint::concentration_low(Self) -> Double
-pub fn Breakpoint::index_high(Self) -> Int
-pub fn Breakpoint::index_low(Self) -> Int
-pub fn Breakpoint::new(Double, Double, Int, Int) -> Self
+pub fn Breakpoint::index_high(Self) -> Int32
+pub fn Breakpoint::index_low(Self) -> Int32
+pub fn Breakpoint::new(Double, Double, Int32, Int32) -> Self
 
 pub struct Day {
   station : String
@@ -106,17 +106,17 @@ pub struct Hourly {
   pollutant : Pollutant
   values : Array[Double?]
 }
-pub fn Hourly::at(Self, Int) -> Double?
-pub fn Hourly::length(Self) -> Int
+pub fn Hourly::at(Self, Int32) -> Double?
+pub fn Hourly::length(Self) -> Int32
 pub fn Hourly::maximum_rolling(Self, Window) -> Double?
-pub fn Hourly::mean(Self, Int) -> Double?
+pub fn Hourly::mean(Self, Int32) -> Double?
 pub fn Hourly::new(Pollutant) -> Self
 pub fn Hourly::pollutant(Self) -> Pollutant
 pub fn Hourly::push(Self, Double?) -> Unit
 pub fn Hourly::rolling(Self, Window) -> Array[Double?]
-pub fn Hourly::valid_between(Self, Int, Int) -> Int
+pub fn Hourly::valid_between(Self, Int32, Int32) -> Int32
 pub fn Hourly::values(Self) -> Array[Double?]
-pub fn Hourly::window_mean(Self, Int, Window) -> Double?
+pub fn Hourly::window_mean(Self, Int32, Window) -> Double?
 
 pub(all) enum Pollutant {
   Pm25
@@ -151,14 +151,14 @@ pub(all) enum Report {
 pub fn Report::all() -> Array[Self]
 
 pub struct Rgb {
-  red : Int
-  green : Int
-  blue : Int
+  red : Int32
+  green : Int32
+  blue : Int32
 }
-pub fn Rgb::blue(Self) -> Int
-pub fn Rgb::green(Self) -> Int
-pub fn Rgb::new(Int, Int, Int) -> Self
-pub fn Rgb::red(Self) -> Int
+pub fn Rgb::blue(Self) -> Int32
+pub fn Rgb::green(Self) -> Int32
+pub fn Rgb::new(Int32, Int32, Int32) -> Self
+pub fn Rgb::red(Self) -> Int32
 
 pub(all) enum Rounding {
   CarryUp
@@ -172,33 +172,33 @@ pub(all) enum Standard {
 }
 
 pub(all) struct Summary {
-  mut days : Int
-  mut total_index : Int
-  mut good_days : Int
-  mut heavy_days : Int
-  mut worst_index : Int?
+  mut days : Int32
+  mut total_index : Int32
+  mut good_days : Int32
+  mut heavy_days : Int32
+  mut worst_index : Int32?
   mut worst_station : String?
-  primary_counts : Array[(Pollutant, Int)]
+  primary_counts : Array[(Pollutant, Int32)]
 }
 pub fn Summary::add(Self, String, AirQuality) -> Unit
 pub fn Summary::average_index(Self) -> Double?
-pub fn Summary::days(Self) -> Int
-pub fn Summary::good_days(Self) -> Int
+pub fn Summary::days(Self) -> Int32
+pub fn Summary::good_days(Self) -> Int32
 pub fn Summary::good_rate(Self) -> Double?
-pub fn Summary::heavy_days(Self) -> Int
+pub fn Summary::heavy_days(Self) -> Int32
 pub fn Summary::most_frequent_primary(Self) -> Pollutant?
 pub fn Summary::new() -> Self
-pub fn Summary::primary_counts(Self) -> Array[(Pollutant, Int)]
-pub fn Summary::worst_index(Self) -> Int?
+pub fn Summary::primary_counts(Self) -> Array[(Pollutant, Int32)]
+pub fn Summary::worst_index(Self) -> Int32?
 pub fn Summary::worst_station(Self) -> String?
 
 pub struct Window {
-  window : Int
-  minimum_valid : Int
+  window : Int32
+  minimum_valid : Int32
 }
-pub fn Window::minimum_valid(Self) -> Int
-pub fn Window::new(Int, Int) -> Self
-pub fn Window::window(Self) -> Int
+pub fn Window::minimum_valid(Self) -> Int32
+pub fn Window::new(Int32, Int32) -> Self
+pub fn Window::window(Self) -> Int32
 
 // Type aliases
 

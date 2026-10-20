@@ -171,6 +171,27 @@ pub(all) enum Standard {
   Epa
 }
 
+pub(all) struct Summary {
+  mut days : Int
+  mut total_index : Int
+  mut good_days : Int
+  mut heavy_days : Int
+  mut worst_index : Int?
+  mut worst_station : String?
+  primary_counts : Array[(Pollutant, Int)]
+}
+pub fn Summary::add(Self, String, AirQuality) -> Unit
+pub fn Summary::average_index(Self) -> Double?
+pub fn Summary::days(Self) -> Int
+pub fn Summary::good_days(Self) -> Int
+pub fn Summary::good_rate(Self) -> Double?
+pub fn Summary::heavy_days(Self) -> Int
+pub fn Summary::most_frequent_primary(Self) -> Pollutant?
+pub fn Summary::new() -> Self
+pub fn Summary::primary_counts(Self) -> Array[(Pollutant, Int)]
+pub fn Summary::worst_index(Self) -> Int?
+pub fn Summary::worst_station(Self) -> String?
+
 pub struct Window {
   window : Int
   minimum_valid : Int

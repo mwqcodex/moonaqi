@@ -1,6 +1,6 @@
 name = "mwqcodex/moonaqi"
 
-version = "0.2.0"
+version = "0.3.0"
 
 readme = "README.md"
 
@@ -19,4 +19,4 @@ keywords = [
 
 preferred_target = "wasm"
 
-description = "Air quality index in pure MoonBit: the Chinese HJ 633-2026 and US EPA breakpoint tables, a day of hourly readings averaged into the indicators the standards describe, the dominant pollutant, and the EPA NowCast."
+description = "Air quality index in pure MoonBit: the Chinese HJ 633-2026 and US EPA breakpoint tables, a day of hourly readings averaged into the indicators the standards describe, a period summarised, the dominant pollutant, and the EPA NowCast."

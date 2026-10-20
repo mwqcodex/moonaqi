@@ -6,6 +6,10 @@ Each pollutant's concentration is mapped onto a common 0–500 scale by
 piecewise-linear interpolation against a table of breakpoints, and the index
 is the worst of those sub-indices.
 
+A complete guide — installing it, the four levels of use, switching
+standards, units, and the mistakes worth knowing about — is in
+[docs/usage.md](docs/usage.md).
+
 ## Quick start
 
 ```moonbit nocheck
@@ -186,6 +190,31 @@ caller reporting to an authority supplies that authority's number.
 `Day::merged` builds a city's day from its stations': the average, hour by
 hour, of the stations that reported that hour.
 
+## A period
+
+`Summary` counts a run of days the way a report describes one: how many were
+good, how many were heavy, the worst of them and where it was, and which
+pollutant kept setting the index.
+
+```moonbit nocheck
+///|
+let summary = @moonaqi.Summary::new()
+
+///|
+summary.add("STATION A", day.aqi(@moonaqi.China, rules).unwrap())
+
+///|
+summary.days()          // days counted
+summary.good_days()     // index at or below 100
+summary.heavy_days()    // index above 200
+summary.good_rate()     // the share of the period, as a fraction of one
+summary.worst_index()   // and the station it came from
+summary.most_frequent_primary()
+```
+
+Every figure is counted from days the library has already indexed, so a
+summary cannot disagree with the days it summarises.
+
 ## Bands
 
 | Index | Band | 中文 | Colour |
@@ -262,6 +291,25 @@ $ moon run cmd/main -- --json
   ...
 }
 ```
+
+## Sources
+
+Every breakpoint and every rule in this library comes from one of the
+documents below. The numbers are transcribed from them rather than inferred,
+and each transcription is pinned by a test.
+
+| What | Where it comes from |
+| --- | --- |
+| China's breakpoints, categories and rounding | HJ 633—2026《环境空气质量指数（AQI）技术规定》, Ministry of Ecology and Environment of China, in force from 2026-03-01. 表3 holds the breakpoint values, §4.2.6 says the index is carried up rather than rounded, and 表3's footnotes say what to report above 800 µg/m³. |
+| China's superseded breakpoints | HJ 633—2012, which the 2026 standard replaced on the same date. |
+| The EPA's breakpoints | The US EPA Air Quality System code table `aqi_breakpoints`, where the EPA publishes the current values. |
+| The EPA's truncation, rounding and band colours | EPA 454/B-18-007, *Technical Assistance Document for the Reporting of Daily Air Quality — the Air Quality Index (AQI)*. |
+| The NowCast algorithm | The EPA's own implementation, `nowcast_pm25`, in the US EPA `sensortoolkit` repository. |
+| The averaging rule | The window lengths are the standards'; the minimum number of reported hours is a parameter, because each authority sets it and has revised it. |
+
+No file from those sources is redistributed here. The tables are
+transcriptions of published values, and the tests assert the values at their
+published steps.
 
 ## Testing
 
